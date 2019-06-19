@@ -1,40 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getAll, create, update, remove } from './services/persons';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-
   const emptyPerson = { name: '', number: '' };
   const [newPerson, setNewPerson] = useState(emptyPerson);
   const [filtered, setFiltered] = useState(persons);
 
-  // fetch persons
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then((response) => {
-      setPersons(response.data);
-    });
+    getAll().then(initialPersons => setPersons(initialPersons));
   }, []);
 
-  // event handlers
-  const addPerson = (e) => {
+  const addPerson = e => {
     e.preventDefault();
 
-    // check for duplicate
-    if (persons.every((p) => p.name !== newPerson.name)) {
-      // add
-      setPersons([...persons, newPerson]);
+    const isDuplicate = persons.some(p => p.name === newPerson.name);
+
+    if (isDuplicate) {
+      const isConfirmed = window.confirm(
+        `${newPerson.name} is already added. Replace the old number?`
+      );
+
+      if (isConfirmed) {
+        const { id } = persons.find(p => p.name === newPerson.name);
+        update(id, newPerson)
+          .then(returnedPerson =>
+            setPersons(
+              persons.map(p =>
+                p.id === returnedPerson.id ? returnedPerson : p
+              )
+            )
+          )
+          .catch(e => {
+            alert(
+              `${newPerson.name} has already been deleted from the server!`
+            );
+            setPersons(persons.filter(p => p.id !== id));
+          });
+      }
     } else {
-      // alert user
-      alert(`${newPerson.name} is already added to phonebook`);
+      create(newPerson).then(returnedPerson =>
+        setPersons([...persons, returnedPerson])
+      );
     }
 
     setNewPerson(emptyPerson);
   };
 
-  const handleChange = (e) => {
+  const deletePerson = id => {
+    const personToDelete = persons.filter(p => p.id === id)[0];
+    const isConfirmed = window.confirm(`Delete ${personToDelete.name}?`);
+
+    if (isConfirmed) {
+      remove(id)
+        .then(() => setPersons(persons.filter(p => p.id !== id)))
+        .catch(e => {
+          alert(`${personToDelete.name} was already deleted from the server`);
+          setPersons(persons.filter(p => p.id !== id));
+        });
+    }
+  };
+
+  const handleChange = e => {
     const { name, value } = e.target;
     setNewPerson({
       ...newPerson,
@@ -42,10 +72,10 @@ const App = () => {
     });
   };
 
-  const handleFilter = (e) => {
+  const handleFilter = e => {
     const { value } = e.target;
     setFiltered(
-      persons.filter((p) => p.name.toLowerCase().includes(value.toLowerCase()))
+      persons.filter(p => p.name.toLowerCase().includes(value.toLowerCase()))
     );
   };
 
@@ -60,7 +90,10 @@ const App = () => {
         newPerson={newPerson}
       />
       <h3>Numbers</h3>
-      <Persons persons={filtered.length ? filtered : persons} />
+      <Persons
+        persons={filtered.length ? filtered : persons}
+        handleDelete={deletePerson}
+      />
     </div>
   );
 };
