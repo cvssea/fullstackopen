@@ -8,8 +8,8 @@ const App = () => {
   const [persons, setPersons] = useState([]);
 
   const emptyPerson = { name: '', number: '' };
-  const [newPerson, setNewPerson] = useState({ ...emptyPerson });
-  const [filtered, setFiltered] = useState([...persons]);
+  const [newPerson, setNewPerson] = useState(emptyPerson);
+  const [filtered, setFiltered] = useState(persons);
 
   // fetch persons
   useEffect(() => {
@@ -31,7 +31,7 @@ const App = () => {
       alert(`${newPerson.name} is already added to phonebook`);
     }
 
-    setNewPerson({ ...emptyPerson });
+    setNewPerson(emptyPerson);
   };
 
   const handleChange = (e) => {
@@ -44,11 +44,9 @@ const App = () => {
 
   const handleFilter = (e) => {
     const { value } = e.target;
-    setFiltered([
-      ...persons.filter((p) =>
-        p.name.toLowerCase().includes(value.toLowerCase())
-      ),
-    ]);
+    setFiltered(
+      persons.filter((p) => p.name.toLowerCase().includes(value.toLowerCase()))
+    );
   };
 
   return (
