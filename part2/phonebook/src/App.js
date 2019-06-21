@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAll, create, update, remove } from './services/persons';
+import Header from './components/Header';
+import Notification from './components/Notification';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
@@ -18,8 +20,16 @@ const App = () => {
   useEffect(() => {
     getAll()
       .then(initialPersons => setPersons(initialPersons))
-      .catch(e => setMessage(`${e} - Please try again later.`));
+      .catch(e =>
+        setMessage({
+          success: false,
+          fatalError: true,
+          text: `${e} - Please try again later.`,
+        })
+      );
   }, []);
+
+  const clearMessage = () => setMessage(null);
 
   const addPerson = e => {
     e.preventDefault();
@@ -34,24 +44,38 @@ const App = () => {
       if (isConfirmed) {
         const { id } = persons.find(p => p.name === newPerson.name);
         update(id, newPerson)
-          .then(returnedPerson =>
+          .then(returnedPerson => {
             setPersons(
               persons.map(p =>
                 p.id === returnedPerson.id ? returnedPerson : p
               )
-            )
-          )
-          .catch(e => {
-            alert(
-              `${newPerson.name} has already been deleted from the server!`
             );
+            setMessage({
+              success: true,
+              text: `Updated number for ${returnedPerson.name}`,
+            });
+            setTimeout(clearMessage, 5000);
+          })
+          .catch(e => {
             setPersons(persons.filter(p => p.id !== id));
+            setMessage({
+              success: false,
+              text: `${
+                newPerson.name
+              } has already been deleted from the server!`,
+            });
+            setTimeout(clearMessage, 5000);
           });
       }
     } else {
       create(newPerson).then(returnedPerson =>
         setPersons([...persons, returnedPerson])
       );
+      setMessage({
+        success: true,
+        text: `Added ${newPerson.name}!`,
+      });
+      setTimeout(clearMessage, 5000);
     }
 
     setNewPerson(emptyPerson);
@@ -65,8 +89,12 @@ const App = () => {
       remove(id)
         .then(() => setPersons(persons.filter(p => p.id !== id)))
         .catch(e => {
-          alert(`${personToDelete.name} was already deleted from the server`);
           setPersons(persons.filter(p => p.id !== id));
+          setMessage({
+            success: false,
+            text: `${personToDelete.name} was already deleted from the server`,
+          });
+          setTimeout(clearMessage, 5000);
         });
       setFilterValue('');
     }
@@ -89,33 +117,23 @@ const App = () => {
     const filterResult = persons.filter(p =>
       p.name.toLowerCase().includes(filterValue.toLowerCase())
     );
-
-    if (filterResult.length) {
-      setMessage(null);
-      setFiltered(filterResult);
-    } else if (filterValue) {
-      setMessage('No results match your search!');
-    }
+    filterResult.length && setFiltered(filterResult);
   }, [persons, filterValue]);
 
   return (
     <div>
-      <h2>Phonebook</h2>
-      <Filter onChange={handleFilter} value={filterValue} />
-      <h3>Add new person</h3>
-      <PersonForm
-        onSubmit={addPerson}
-        onChange={handleChange}
-        newPerson={newPerson}
-      />
-      <h3>Numbers</h3>
-      {message ? (
-        <p>{message}</p>
-      ) : (
-        <Persons
-          persons={filtered.length ? filtered : persons}
-          handleDelete={deletePerson}
-        />
+      <Header title="Phonebook" />
+      {message && <Notification message={message} />}
+      {message && message.fatalError ? null : (
+        <>
+          <Filter onChange={handleFilter} value={filterValue} />
+          <PersonForm
+            onSubmit={addPerson}
+            onChange={handleChange}
+            newPerson={newPerson}
+          />
+          <Persons persons={filtered} handleDelete={deletePerson} />
+        </>
       )}
     </div>
   );

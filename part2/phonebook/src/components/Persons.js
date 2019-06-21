@@ -11,7 +11,12 @@ const Persons = ({ persons, handleDelete }) => {
     />
   ));
 
-  return <div>{numbers}</div>;
+  return (
+    <div>
+      <h3>Numbers</h3>
+      {numbers}
+    </div>
+  );
 };
 
 export default Persons;
