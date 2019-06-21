@@ -6,12 +6,19 @@ import Persons from './components/Persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
+
   const emptyPerson = { name: '', number: '' };
   const [newPerson, setNewPerson] = useState(emptyPerson);
+
+  const [filterValue, setFilterValue] = useState('');
   const [filtered, setFiltered] = useState(persons);
 
+  const [message, setMessage] = useState(null);
+
   useEffect(() => {
-    getAll().then(initialPersons => setPersons(initialPersons));
+    getAll()
+      .then(initialPersons => setPersons(initialPersons))
+      .catch(e => setMessage(`${e} - Please try again later.`));
   }, []);
 
   const addPerson = e => {
@@ -51,7 +58,7 @@ const App = () => {
   };
 
   const deletePerson = id => {
-    const personToDelete = persons.filter(p => p.id === id)[0];
+    const personToDelete = persons.find(p => p.id === id);
     const isConfirmed = window.confirm(`Delete ${personToDelete.name}?`);
 
     if (isConfirmed) {
@@ -61,6 +68,7 @@ const App = () => {
           alert(`${personToDelete.name} was already deleted from the server`);
           setPersons(persons.filter(p => p.id !== id));
         });
+      setFilterValue('');
     }
   };
 
@@ -74,15 +82,26 @@ const App = () => {
 
   const handleFilter = e => {
     const { value } = e.target;
-    setFiltered(
-      persons.filter(p => p.name.toLowerCase().includes(value.toLowerCase()))
-    );
+    setFilterValue(value);
   };
+
+  useEffect(() => {
+    const filterResult = persons.filter(p =>
+      p.name.toLowerCase().includes(filterValue.toLowerCase())
+    );
+
+    if (filterResult.length) {
+      setMessage(null);
+      setFiltered(filterResult);
+    } else if (filterValue) {
+      setMessage('No results match your search!');
+    }
+  }, [persons, filterValue]);
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter onChange={handleFilter} />
+      <Filter onChange={handleFilter} value={filterValue} />
       <h3>Add new person</h3>
       <PersonForm
         onSubmit={addPerson}
@@ -90,10 +109,14 @@ const App = () => {
         newPerson={newPerson}
       />
       <h3>Numbers</h3>
-      <Persons
-        persons={filtered.length ? filtered : persons}
-        handleDelete={deletePerson}
-      />
+      {message ? (
+        <p>{message}</p>
+      ) : (
+        <Persons
+          persons={filtered.length ? filtered : persons}
+          handleDelete={deletePerson}
+        />
+      )}
     </div>
   );
 };
