@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { getAll, create, update, remove } from './services/persons';
+import { getAll, create, update, remove } from './services/people';
 import Header from './components/Header';
 import Notification from './components/Notification';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
-import Persons from './components/Persons';
+import People from './components/People';
 
 const App = () => {
-  const [persons, setPersons] = useState([]);
+  const [people, setPeople] = useState([]);
 
   const emptyPerson = { name: '', number: '' };
   const [newPerson, setNewPerson] = useState(emptyPerson);
 
   const [filterValue, setFilterValue] = useState('');
-  const [filtered, setFiltered] = useState(persons);
+  const [filtered, setFiltered] = useState(people);
 
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
     getAll()
-      .then(initialPersons => setPersons(initialPersons))
+      .then(initialPersons => setPeople(initialPersons))
       .catch(e =>
         setMessage({
           success: false,
@@ -34,7 +34,7 @@ const App = () => {
   const addPerson = e => {
     e.preventDefault();
 
-    const isDuplicate = persons.some(p => p.name === newPerson.name);
+    const isDuplicate = people.some(p => p.name === newPerson.name);
 
     if (isDuplicate) {
       const isConfirmed = window.confirm(
@@ -42,13 +42,11 @@ const App = () => {
       );
 
       if (isConfirmed) {
-        const { id } = persons.find(p => p.name === newPerson.name);
+        const { id } = people.find(p => p.name === newPerson.name);
         update(id, newPerson)
           .then(returnedPerson => {
-            setPersons(
-              persons.map(p =>
-                p.id === returnedPerson.id ? returnedPerson : p
-              )
+            setPeople(
+              people.map(p => (p.id === returnedPerson.id ? returnedPerson : p))
             );
             setMessage({
               success: true,
@@ -57,7 +55,7 @@ const App = () => {
             setTimeout(clearMessage, 5000);
           })
           .catch(e => {
-            setPersons(persons.filter(p => p.id !== id));
+            setPeople(people.filter(p => p.id !== id));
             setMessage({
               success: false,
               text: `${
@@ -69,7 +67,7 @@ const App = () => {
       }
     } else {
       create(newPerson).then(returnedPerson =>
-        setPersons([...persons, returnedPerson])
+        setPeople([...people, returnedPerson])
       );
       setMessage({
         success: true,
@@ -82,14 +80,14 @@ const App = () => {
   };
 
   const deletePerson = id => {
-    const personToDelete = persons.find(p => p.id === id);
+    const personToDelete = people.find(p => p.id === id);
     const isConfirmed = window.confirm(`Delete ${personToDelete.name}?`);
 
     if (isConfirmed) {
       remove(id)
-        .then(() => setPersons(persons.filter(p => p.id !== id)))
+        .then(() => setPeople(people.filter(p => p.id !== id)))
         .catch(e => {
-          setPersons(persons.filter(p => p.id !== id));
+          setPeople(people.filter(p => p.id !== id));
           setMessage({
             success: false,
             text: `${personToDelete.name} was already deleted from the server`,
@@ -114,11 +112,11 @@ const App = () => {
   };
 
   useEffect(() => {
-    const filterResult = persons.filter(p =>
+    const filterResult = people.filter(p =>
       p.name.toLowerCase().includes(filterValue.toLowerCase())
     );
     filterResult.length && setFiltered(filterResult);
-  }, [persons, filterValue]);
+  }, [people, filterValue]);
 
   return (
     <div>
@@ -132,7 +130,7 @@ const App = () => {
             onChange={handleChange}
             newPerson={newPerson}
           />
-          <Persons persons={filtered} handleDelete={deletePerson} />
+          <People people={filtered} handleDelete={deletePerson} />
         </>
       )}
     </div>
