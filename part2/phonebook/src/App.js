@@ -66,13 +66,21 @@ const App = () => {
           });
       }
     } else {
-      create(newPerson).then(returnedPerson =>
-        setPeople([...people, returnedPerson])
-      );
-      setMessage({
-        success: true,
-        text: `Added ${newPerson.name}!`,
-      });
+      create(newPerson)
+        .then(returnedPerson => {
+          setPeople([...people, returnedPerson]);
+          setMessage({
+            success: true,
+            text: `Added ${newPerson.name}!`,
+          });
+        })
+        .catch(e =>
+          setMessage({
+            success: false,
+            text: e.response.data.error,
+          })
+        );
+
       setTimeout(clearMessage, 5000);
     }
 
