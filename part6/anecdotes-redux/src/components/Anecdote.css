@@ -1,0 +1,26 @@
+.Anecdote {
+  border: 1px solid green;
+  padding: .5em;
+  margin: 10px 0;
+}
+
+.Anecdote p {
+  font-weight: bold;
+}
+
+.Anecdote button {
+  display: block;
+  background-color: lightseagreen;
+  border: none;
+  margin-top: 5px;
+  padding: .5em 2em;
+  color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .1s ease-out;
+}
+
+.Anecdote button:hover {
+  transform: scale(1.1);
+}
