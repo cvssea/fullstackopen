@@ -8,18 +8,17 @@ import People from './components/People';
 
 const App = () => {
   const [people, setPeople] = useState([]);
-
   const emptyPerson = { name: '', number: '' };
   const [newPerson, setNewPerson] = useState(emptyPerson);
-
   const [filterValue, setFilterValue] = useState('');
   const [filtered, setFiltered] = useState(people);
-
   const [message, setMessage] = useState(null);
+
+  const clearMessage = () => setMessage(null);
 
   useEffect(() => {
     getAll()
-      .then(initialPersons => setPeople(initialPersons))
+      .then(initialPeople => setPeople(initialPeople))
       .catch(e =>
         setMessage({
           success: false,
@@ -28,8 +27,6 @@ const App = () => {
         })
       );
   }, []);
-
-  const clearMessage = () => setMessage(null);
 
   const addPerson = e => {
     e.preventDefault();
@@ -55,12 +52,19 @@ const App = () => {
             setTimeout(clearMessage, 5000);
           })
           .catch(e => {
-            setPeople(people.filter(p => p.id !== id));
+            let errorText;
+            if (e.response.data) {
+              errorText = e.response.data.error;
+            } else {
+              setPeople(people.filter(p => p.id !== id));
+              errorText = `${
+                newPerson.name
+              } was already deleted from the server!`;
+            }
+
             setMessage({
               success: false,
-              text: `${
-                newPerson.name
-              } has already been deleted from the server!`,
+              text: errorText,
             });
             setTimeout(clearMessage, 5000);
           });
@@ -77,7 +81,7 @@ const App = () => {
         .catch(e =>
           setMessage({
             success: false,
-            text: e.response.data.error,
+            text: `${e.response.data.error}`,
           })
         );
 
