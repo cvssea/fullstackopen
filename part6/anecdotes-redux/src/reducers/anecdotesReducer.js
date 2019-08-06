@@ -29,27 +29,28 @@ const anecdotesReducer = (state = initialState, action) => {
         }
         return a;
       });
-      return [...updated];
+      return updated;
     default:
       return state;
   }
 };
 
-export const createAnecdote = content => {
+export const createAnecdote = payload => {
+  console.log('creating')
   return {
     type: 'ADD',
     payload: {
+      ...payload,
       id: genId(),
-      content,
       votes: 0,
     },
   };
 };
 
-export const vote = id => {
+export const vote = payload => {
   return {
     type: 'VOTE',
-    payload: { id },
+    payload,
   };
 };
 

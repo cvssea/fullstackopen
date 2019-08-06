@@ -1,12 +1,19 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { createAnecdote } from '../reducers/anecdotesReducer';
 import './AnecdoteForm.css';
 
-const AnecdoteForm = ({ store }) => {
+const AnecdoteForm = ({ createAnecdote }) => {
   const handleSubmit = e => {
     e.preventDefault();
     const anecdote = e.target.anecdote.value;
-    store.dispatch(createAnecdote(anecdote));
+    const message = `You added '${anecdote}'`;
+    const payload = {
+      content: anecdote,
+      message,
+    };
+    createAnecdote(payload);
+    e.target.anecdote.value = '';
   };
 
   return (
@@ -22,4 +29,7 @@ const AnecdoteForm = ({ store }) => {
   );
 };
 
-export default AnecdoteForm;
+export default connect(
+  null,
+  { createAnecdote }
+)(AnecdoteForm);

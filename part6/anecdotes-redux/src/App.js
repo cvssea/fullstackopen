@@ -4,13 +4,13 @@ import Notification from './components/Notification';
 import AnecdoteForm from './components/AnecdoteForm';
 import AnecdoteList from './components/AnecdoteList';
 
-const App = ({ store }) => (
+const App = () => (
   <div>
     <h1>Anecdotes</h1>
-    <Filter store={store} />
-    <AnecdoteForm store={store} />
-    {store.getState().notification && <Notification store={store} />}
-    <AnecdoteList store={store} />
+    <Filter />
+    <AnecdoteForm />
+    <Notification />
+    <AnecdoteList />
   </div>
 );
 
