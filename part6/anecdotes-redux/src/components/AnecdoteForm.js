@@ -1,5 +1,5 @@
 import React from 'react';
-import { createAnecdote } from '../reducers';
+import { createAnecdote } from '../reducers/anecdotesReducer';
 import './AnecdoteForm.css';
 
 const AnecdoteForm = ({ store }) => {

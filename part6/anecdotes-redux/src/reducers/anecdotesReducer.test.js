@@ -1,5 +1,5 @@
 import deepFreeze from 'deep-freeze';
-import anecdotesReducer from './';
+import anecdotesReducer from './anecdotesReducer';
 
 describe('anecdotes reducer', () => {
   test('adding new anecdote succeeds', () => {

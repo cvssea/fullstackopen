@@ -8,7 +8,7 @@ const anecdotesAtStart = [
 ];
 
 const genId = () => Math.floor(Math.random() * 10000);
-const asObject = item => {
+const toObject = item => {
   return {
     id: genId(),
     content: item,
@@ -16,7 +16,7 @@ const asObject = item => {
   };
 };
 
-const initialState = anecdotesAtStart.map(asObject);
+const initialState = anecdotesAtStart.map(toObject);
 
 const anecdotesReducer = (state = initialState, action) => {
   switch (action.type) {
