@@ -36,7 +36,6 @@ const anecdotesReducer = (state = initialState, action) => {
 };
 
 export const createAnecdote = payload => {
-  console.log('creating')
   return {
     type: 'ADD',
     payload: {

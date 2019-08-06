@@ -2,8 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Anecdote from './Anecdote';
 import { vote } from '../reducers/anecdotesReducer';
+import { removeNotification } from '../reducers/notificationReducer';
 
-const AnecdoteList = ({ anecdotes, vote }) => {
+const AnecdoteList = ({ anecdotes, vote, removeNotification }) => {
   const handleClick = anecdote => () => {
     const message = `You voted for '${anecdote.content}'`;
     const payload = {
@@ -11,6 +12,7 @@ const AnecdoteList = ({ anecdotes, vote }) => {
       message,
     };
     vote(payload);
+    setTimeout(() => removeNotification(), 5000);
   };
 
   return (
@@ -39,5 +41,5 @@ const mapStateToProps = ({ anecdotes, filter }) => {
 
 export default connect(
   mapStateToProps,
-  { vote }
+  { vote, removeNotification }
 )(AnecdoteList);

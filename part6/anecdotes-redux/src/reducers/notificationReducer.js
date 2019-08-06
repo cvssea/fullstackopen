@@ -4,15 +4,15 @@ const notificationReducer = (state = null, action) => {
     case 'VOTE':
       return action.payload.message;
     case 'REMOVE_NOTIFICATION':
-      return setTimeout(() => null, 5);
+      return null;
     default:
       return state;
   }
 };
 
 // TO DO - redux-thunk
-// export const removeNotification = () => {
-//   return { type: 'REMOVE_NOTIFICATION' };
-// };
+export const removeNotification = () => {
+  return { type: 'REMOVE_NOTIFICATION' };
+};
 
 export default notificationReducer;
