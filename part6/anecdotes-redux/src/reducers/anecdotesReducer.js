@@ -1,56 +1,46 @@
-const anecdotesAtStart = [
-  'If it hurts, do it more often',
-  'Adding manpower to a late software project makes it later!',
-  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-  'Premature optimization is the root of all evil.',
-  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
-];
+import anecdotesService from '../services/anecdotes';
 
-const genId = () => Math.floor(Math.random() * 10000);
-const toObject = item => {
-  return {
-    id: genId(),
-    content: item,
-    votes: 0,
-  };
-};
-
-const initialState = anecdotesAtStart.map(toObject);
-
-const anecdotesReducer = (state = initialState, action) => {
+const anecdotesReducer = (state = [], action) => {
   switch (action.type) {
+    case 'INIT':
+      return action.payload;
     case 'ADD':
-      return [action.payload, ...state];
+      return [...state, action.payload];
     case 'VOTE':
-      const updated = state.map(a => {
-        if (a.id === action.payload.id) {
-          return { ...a, votes: a.votes + 1 };
-        }
-        return a;
-      });
-      return updated;
+      const filtered = state.filter(a => a.id !== action.payload.id);
+      return [...filtered, action.payload];
     default:
       return state;
   }
 };
 
-export const createAnecdote = payload => {
-  return {
-    type: 'ADD',
-    payload: {
-      ...payload,
-      id: genId(),
-      votes: 0,
-    },
-  };
+export const initAnecdotes = () => async dispatch => {
+  const anecdotes = await anecdotesService.getAll();
+  dispatch({
+    type: 'INIT',
+    payload: anecdotes,
+  });
 };
 
-export const vote = payload => {
-  return {
+export const createAnecdote = data => async dispatch => {
+  const newAnecdote = await anecdotesService.create(data.content);
+
+  dispatch({
+    type: 'ADD',
+    payload: {
+      ...newAnecdote,
+    },
+  });
+};
+
+export const vote = data => async dispatch => {
+  const updatedAnecdote = await anecdotesService.update(data);
+  dispatch({
     type: 'VOTE',
-    payload,
-  };
+    payload: {
+      ...updatedAnecdote,
+    },
+  });
 };
 
 export default anecdotesReducer;
