@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Menu.css';
 
 const Menu = () => {
@@ -7,13 +8,13 @@ const Menu = () => {
     <nav className="Menu">
       <ul>
         <li>
-          <a href="#">Anecdotes</a>
+          <Link to="/">Anecdotes</Link>
         </li>
         <li>
-          <a href="#">Create new</a>
+          <Link to="/create">Create new</Link>
         </li>
         <li>
-          <a href="#">About</a>
+          <Link to="/about">About</Link>
         </li>
       </ul>
     </nav>

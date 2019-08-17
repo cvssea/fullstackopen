@@ -2,6 +2,7 @@ import React from 'react';
 
 const Footer = () => (
   <div>
+    <hr />
     Anecdote app for{' '}
     <a href="https://courses.helsinki.fi/fi/tkt21009">
       Full Stack -sovelluskehitys
