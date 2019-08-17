@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Menu from './components/Menu';
+import Header from './components/Header';
 import About from './components/About';
 import Footer from './components/Footer';
 import AnecdoteList from './components/AnecdoteList';
@@ -31,28 +31,29 @@ const App = () => {
 
   return (
     <div>
-      <h1>Software Anecdotes</h1>
       <Router>
-        <Menu />
-        <Route
-          exact
-          path="/"
-          render={() => (
-            <div>
-              {notification && <Notification message={notification} />}
-              <AnecdoteList anecdotes={anecdotes} />
-            </div>
-          )}
-        />
-        <Route
-          exact
-          path="/anecdotes/:id"
-          render={({ match }) => (
-            <Anecdote anecdote={anecdoteById(match.params.id)} />
-          )}
-        />
-        <Route path="/about" render={() => <About />} />
-        <Route path="/create" render={() => <CreateNew addNew={addNew} />} />
+        <Header />
+        <div className="container">
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <div>
+                {notification && <Notification message={notification} />}
+                <AnecdoteList anecdotes={anecdotes} />
+              </div>
+            )}
+          />
+          <Route
+            exact
+            path="/anecdotes/:id"
+            render={({ match }) => (
+              <Anecdote anecdote={anecdoteById(match.params.id)} />
+            )}
+          />
+          <Route path="/about" render={() => <About />} />
+          <Route path="/create" render={() => <CreateNew addNew={addNew} />} />
+        </div>
       </Router>
       <Footer />
     </div>

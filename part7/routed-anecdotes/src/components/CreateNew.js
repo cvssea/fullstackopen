@@ -21,34 +21,40 @@ const CreateNew = ({ addNew, history }) => {
     <div>
       <h2>Create new anecdote</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          content
+        <div className="form-group">
+          <label htmlFor="content">Content</label>
           <input
+            id="content"
+            className="form-control"
             type="text"
             name="content"
             value={content}
             onChange={e => setContent(e.target.value)}
           />
         </div>
-        <div>
-          author
+        <div className="form-group">
+          <label htmlFor="author">Author</label>
           <input
+            id="author"
+            className="form-control"
             type="text"
             name="author"
             value={author}
             onChange={e => setAuthor(e.target.value)}
           />
         </div>
-        <div>
-          url for more info
+        <div className="form-group">
+          <label htmlFor="info">URL for more info</label>
           <input
+            id="info"
+            className="form-control"
             type="text"
             name="info"
             value={info}
             onChange={e => setInfo(e.target.value)}
           />
         </div>
-        <button>Create</button>
+        <button className="btn btn-primary">Create</button>
       </form>
     </div>
   );
